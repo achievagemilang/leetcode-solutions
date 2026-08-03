@@ -1,55 +1,40 @@
 class Solution {
-    class Position {
-        int i, j;
-        Position(int i, int j){
-            this.i = i;
-            this.j = j;
-
-        }
-    }
     public int numIslands(char[][] grid) {
-        int rows = grid.length;
-        int cols = grid[0].length;
+        int numIsland = 0;
+        int row = grid.length;
+        int col = grid[0].length;
+        boolean[][] visited = new boolean[row][col];
 
-
-        int ans = 0;
-        boolean[][] visited = new boolean[rows][cols]; 
-        for(int i=0; i<rows; i++){
-            for(int j=0; j<cols; j++){
+        for(int i=0; i<row; i++){
+            for(int j=0; j<col; j++){
                 if(grid[i][j] == '1' && !visited[i][j]){
-                    bfs(new Position(i, j), visited, grid);
-                    ans++;
+                    traverseIsland(i, j, visited, grid);
+                    numIsland++;
                 }
             }
         }
 
-        return ans;
+        return numIsland;
     }
 
-    public void bfs(Position pos , boolean[][] visited, char[][] grid){
-        Queue<Position> q = new ArrayDeque();
-        q.add(pos);
-        visited[pos.i][pos.j] = true;
-        int[][] dirs = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+    public void traverseIsland(int i, int j, boolean[][] visited, char[][] grid){
+        if(isOutOfBounds(i, j, grid)) return;
+        if(visited[i][j]) return;
+        if(grid[i][j] == '0') return;
 
-        while(!q.isEmpty()){
-            Position now = q.poll();
+        visited[i][j] = true;
 
-            for(int[] d: dirs){
-                Position next = new Position(now.i + d[0], now.j + d[1]);
+        int[][] directions = new int[][]{new int[]{1, 0}, new int[]{-1, 0}, new int[]{0, 1}, new int[]{0, -1}};
+        for(int[] dir: directions){
+            int nextRow = i + dir[0];
+            int nextCol = j + dir[1];
 
-                if(isInBound(next, grid) && !visited[next.i][next.j] && grid[next.i][next.j] == '1'){
-                    q.add(next);
-                    visited[next.i][next.j] = true;
-                }
-            }
-        } 
+            traverseIsland(nextRow, nextCol, visited, grid);
+        }
     }
 
-    public boolean isInBound(Position pos, char[][] grid){
-        int rows = grid.length;
-        int cols = grid[0].length;
-
-        return pos.i >= 0 && pos.i < rows && pos.j >=0 && pos.j < cols;
+    public boolean isOutOfBounds(int i, int j, char[][] grid){
+        return i < 0 || j < 0 || i >= grid.length || j >= grid[0].length; 
     }
 }
+
